@@ -1,0 +1,85 @@
+These are pretty simple, I was just having some fun, but here ya go.
+1. A global timer with a custom name, count direction, and length (seconds)
+
+command /timer [<string>] [<string>] [<integer>]:
+	#arg-1 - Timer Name
+	#arg-2 - Count direction (up or down)
+	#arg-3 - Timer length
+	trigger:
+		execute console command "/bossbar remove 1389"
+		wait 0.5 second
+		execute console command "/bossbar add 1389 %arg-1%"
+		wait 0.5 seconds
+		execute console command "/bossbar set 1389 players @a"
+		wait 0.5 seconds
+		execute console command "/bossbar set 1389 max %arg-3%"
+		
+		if arg-2 is "up":
+			execute console command "/bossbar set 1389 value 0"
+			loop arg-3 times:
+				wait 1 second
+				execute console command "/bossbar set 1389 value %loop-number%"
+			execute console command "/bossbar remove 1389"
+		else:
+			if arg-2 is "down":
+				execute console command "/bossbar set 1389 value %arg-3%"
+				set {_i} to arg-3
+				loop arg-3 times:
+					execute console command "/bossbar set 1389 value %{_i}%"
+					remove 1 from {_i}
+					wait 1 second
+				execute console command "/bossbar remove 1389"
+        
+        
+       
+2. The /hand command currently in use for Digtastic
+
+command /hand:
+	trigger:
+		if player's held item is air:
+			broadcast "&7%player%: [nothing]"
+		else:
+			broadcast "&7%player%: [%held item%]"
+      
+      
+      
+3. A /broadcast command (like the one used in Digtastic - I was intrigued on how it worked)
+
+command /broadcast [<string>]:
+	permission: op
+	trigger:
+		broadcast ""
+		broadcast ""
+		broadcast "&6&lServerName: &e%arg-1%"
+		broadcast ""
+		broadcast ""
+    
+    
+    
+4. A /nuke command, with options on wether to destroy blocks or not
+
+command /nuke [<boolean>]:
+	trigger:
+		set {x} to x-position of player
+		set {y} to y-position of player
+		set {z} to z-position of player
+		if arg-1 is true:
+			loop 3 times:
+				console command "/summon minecraft:creeper %{x}% %{y}% %{z}% {Fuse:300,ExplosionRadius:100,ignited:1,Invulnerable:1b}"
+			
+			broadcast "&4&lThe Nuclear Warhead Detonation sequence has activated. You have T-Minus 15 seconds until detonation."
+		else:
+			console command "/gamerule mobGriefing false"
+			loop 3 times:
+				console command "/summon minecraft:creeper %{x}% %{y}% %{z}% {Fuse:300,ExplosionRadius:100,ignited:1,Invulnerable:1b}"
+			broadcast "&4&lThe Nuclear Warhead Detonation sequence has activated. You have T-Minus 15 seconds until detonation."
+			wait 300 ticks
+			console command "/gamerule mobGriefing true"
+      
+      
+      
+      
+      
+      
+      
+If you want the rest of them, just ask or DM me on discord (derpguy41#0996)
