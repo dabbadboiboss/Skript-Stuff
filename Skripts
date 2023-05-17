@@ -43,7 +43,7 @@ command /hand:
       
       
       
-3. A /broadcast command (like the one used in Digtastic - I was intrigued on how it worked)
+3. A /broadcast command (like the one used in Digtastic - I was just intrigued on how it worked)
 
 command /broadcast [<string>]:
 	permission: op
@@ -75,11 +75,133 @@ command /nuke [<boolean>]:
 			broadcast "&4&lThe Nuclear Warhead Detonation sequence has activated. You have T-Minus 15 seconds until detonation."
 			wait 300 ticks
 			console command "/gamerule mobGriefing true"
-      
-      
-      
-      
-      
-      
-      
-If you want the rest of them, just ask or DM me on discord (derpguy41#0996)
+			
+			
+			
+5. A custom whitelist, with a custom kick message, and seperate commands for ease-of-use
+
+function contains(list: objects, check: object) :: boolean:
+    loop {_list::*}:
+        if loop-value is {_check}:
+            return true
+    return false
+
+on load:
+	set {whitelist::*} to "miniamobfighter"
+
+on join:
+	if contains({whitelist::*}, player) is false:
+		kick player due to "&eThe server is still under developement. If you would like to join, please ask the owner (derpguy41-0996)"
+		
+command /whitelistadd [<player>]:
+	permission: op
+	trigger:
+		if contains({whitelist::*}, arg-1) is false:
+			add arg-1 to {whitelist::*}
+			broadcast "&l%arg-1% has been added to the beta-access whitelist."
+		else:
+			broadcast "&l&c%arg-1% is already on the whitelist, silly!"
+
+command /whitelistremove [<player>]:
+	permission: op
+	trigger:
+		if contains({whitelist::*}, arg-1) is true:
+			remove arg-1 from {whitelist::*}
+			broadcast "&l%arg-1% has been removed from the beta-access whitelist."
+		else:
+			broadcast "&l&c%arg-1% isn't even on the whitelist, silly!"
+			
+command /whitelistlist:
+	permission: op
+	aliases: /wll
+	trigger:
+		broadcast "&lThe current players with beta-access are:"
+		broadcast ""
+		loop {whitelist::*}:
+			broadcast {whitelist::%loop-index%}
+			
+			
+			
+6. A custom staff-chat that is linked with luckperms
+
+on load:
+	if player has permission "luckperms.group.staff":
+		set {on.%player's uuid%} to false
+		
+command /staffchat:
+	aliases: /sc, /schat
+	trigger:
+		if player has permission "luckperms.group.staff":
+			if {on.%player's uuid%} is false:
+				set {on.%player's uuid%} to true
+				send "&l&2Staff-Chat enabled!" to player
+			else:
+				set {on.%player's uuid%} to false
+				send "&l&4Staff-Chat disabled!" to player
+		else:
+			send "It's called &lStaff&r-Chat for a reason, y'know" to player
+
+on chat:
+	if {on.%player's uuid%} is true:
+		cancel event
+		loop all players:
+			if loop-player has permission "luckperms.group.staff":
+				send "&l&8[Staff-Chat]&r &5%player%: &r%message%" to player
+				
+				
+				
+7. Click detection for a server I'm working on (too long for it to be readable on here, just ask me for the code on discord)
+
+8. A custom player flag system used for moderation. It is a work in progress, and I am currently in the proccess of figuring out why tf it doesn't work (read comments)
+
+#All BROADCASTS are for debugging and are not permanent
+#Lists the flags of the set player. Planning for if it is not set (see comment under 'else')
+command /listflags [<player>]:
+	trigger:
+		if player has permission "luckperms.group.staff":
+			if arg-1 is set:
+				broadcast "Debug: &2player set"
+				send "&l&8%arg-1%'s flags:" to player
+				
+				#{_sizeof} sets to 0 no matter what. Possible that list isn't saving?
+				set {_sizeof} to the size of {flags::%arg-1's uuid%::flags::*}
+				broadcast "{_sizeof} debug: %{_sizeof}%"
+
+				loop {_sizeof} times: #loops the amount of flags player has
+					broadcast "Loop-index debug: %loop-index%"
+					broadcast "Loop-number debug: %loop-number%"
+					
+					#lists every flag of arg-1 (player) to the person running command
+					send "&l&8%loop-number%. &r&8%{flags::arg-1's uuid::flags::loop-index}%" to player
+				#for debugging - broadcasts "debug: <none>". Possible that list isn't saving?
+				broadcast "All player's flags debug: %{flags::arg-1's uuid::flags::*}%"
+			else:
+				broadcast "Debug: &4player not set"
+				#Might eventually make it so when a player isn't set, it lists all flags of every player, and MAYBE a way to claim flags/mark as dealt with?
+		else:
+			send "&4You may not use that command. Don't try it." to player
+
+
+
+#Adds a flag to the specified player. If reason (string) is given, will save the reason. If no reason is given, it will save preset message.
+command /flag <player> [<string>]:
+	trigger:
+		if player has permission "luckperms.group.staff":
+			if arg-2 is set:
+				broadcast "&2reason set"
+				#adds the reason for the flag to the player's personal flag storage
+				add arg-2 to {flags::%player's uuid%::flags}
+				send "&2Added a flag to %arg-1% for the reason: %arg-2%" to player
+			else:
+				broadcast "&4reason not set"
+				#adds the message "No reason given" to the player's personal flag storage
+				add "No reason" to {flags::%player's uuid%::flags}
+				send "&2Added a flag to %arg-1% with no reason given" to player
+		else:
+			send "&4You may not use that command. Don't try it." to player
+			
+			
+
+I have a couple more, but they are mostly minor things. If you want them, or want to ask any questions - or give me dev (; - DM me on Discord (derpguy41#0996)
+
+PS: If you have any idea how to fix Number 8 (player flags) PLEASE DM me, I'm so bloody confused
