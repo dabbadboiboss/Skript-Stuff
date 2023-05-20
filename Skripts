@@ -152,56 +152,41 @@ on chat:
 				
 7. Click detection for a server I'm working on (too long for it to be readable on here, just ask me for the code on discord)
 
-8. A custom player flag system used for moderation. It is a work in progress, and I am currently in the proccess of figuring out why tf it doesn't work (read comments)
+8. A custom player flag system used for moderation.
 
-#All BROADCASTS are for debugging and are not permanent
-#Lists the flags of the set player. Planning for if it is not set (see comment under 'else')
-command /listflags [<player>]:
+command /listflags <player>:
 	trigger:
-		if player has permission "luckperms.group.staff":
-			if arg-1 is set:
-				broadcast "Debug: &2player set"
+		if {flags::%arg-1's uuid%::*} is set:
 				send "&l&8%arg-1%'s flags:" to player
 				
-				#{_sizeof} sets to 0 no matter what. Possible that list isn't saving?
-				set {_sizeof} to the size of {flags::%arg-1's uuid%::flags::*}
-				broadcast "{_sizeof} debug: %{_sizeof}%"
-
-				loop {_sizeof} times: #loops the amount of flags player has
-					broadcast "Loop-index debug: %loop-index%"
-					broadcast "Loop-number debug: %loop-number%"
-					
-					#lists every flag of arg-1 (player) to the person running command
-					send "&l&8%loop-number%. &r&8%{flags::arg-1's uuid::flags::loop-index}%" to player
-				#for debugging - broadcasts "debug: <none>". Possible that list isn't saving?
-				broadcast "All player's flags debug: %{flags::arg-1's uuid::flags::*}%"
+				set {_loopnumb} to 0
+				loop {flags::%arg-1's uuid%::*}:
+					add 1 to {_loopnumb}
+					send "&8&l%{_loopnumb}%. &r%loop-value%"
 			else:
-				broadcast "Debug: &4player not set"
-				#Might eventually make it so when a player isn't set, it lists all flags of every player, and MAYBE a way to claim flags/mark as dealt with?
-		else:
-			send "&4You may not use that command. Don't try it." to player
+				send "&8%arg-1% does not currently have any flags to list."
 
 
-
-#Adds a flag to the specified player. If reason (string) is given, will save the reason. If no reason is given, it will save preset message.
 command /flag <player> [<string>]:
+	permission: "luckperms.group.staff"
 	trigger:
-		if player has permission "luckperms.group.staff":
-			if arg-2 is set:
-				broadcast "&2reason set"
-				#adds the reason for the flag to the player's personal flag storage
-				add arg-2 to {flags::%player's uuid%::flags}
+		if arg-2 is set:
+				add arg-2 to {flags::%arg-1's uuid%::*}
 				send "&2Added a flag to %arg-1% for the reason: %arg-2%" to player
 			else:
-				broadcast "&4reason not set"
-				#adds the message "No reason given" to the player's personal flag storage
-				add "No reason" to {flags::%player's uuid%::flags}
+				add "No reason" to {flags::%arg-1's uuid%::*}
 				send "&2Added a flag to %arg-1% with no reason given" to player
+
+command /unflag <player> [<string>]:
+	permission: "luckperms.group.staff"
+	trigger:
+		if arg-2 is set:
+			remove arg-2 from {flags::%arg-1's uuid%::*}
+			send "&2Removed the flag ""%arg-2%"" from %arg-1%."
 		else:
-			send "&4You may not use that command. Don't try it." to player
-			
-			
+			clear {flags::%arg-1's uuid%::*}
+			send "Completely cleared all flags from %arg-1%"
+
+
 
 I have a couple more, but they are mostly minor things. If you want them, or want to ask any questions - or give me dev (; - DM me on Discord (derpguy41#0996)
-
-PS: If you have any idea how to fix Number 8 (player flags) PLEASE DM me, I'm so bloody confused
