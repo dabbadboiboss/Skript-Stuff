@@ -369,5 +369,34 @@ on any movement:
 
 
 
+10. A custom skript that basically replaces worldguard and such. Pretty basic, but it works.
+
+on break:
+	if player is not op:
+		cancel event
+		send "&cHey, you can't break that here!" to player
+		
+on place:
+	if player is not op:
+		cancel event
+		send "&cHey, you can't place that here!" to player
+
+on drop:
+	if player is not op:
+		cancel event
+		send "&cHey, you can't drop that!"
+		player command "/give %player% %event-item% 1"
+
+on damage:
+	if victim is item frame:
+		if attacker is not op:
+			cancel event
+
+on right click on item frame:
+	if player is not op:
+		cancel event
+
+
+
 
 I have a couple more, but they are mostly minor things. If you want them, or want to ask any questions - or give me dev (; - DM me on Discord (derpguy41#0996)
