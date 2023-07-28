@@ -32,7 +32,7 @@ command /timer [<string>] [<string>] [<integer>]:
         
         
        
-2. The /hand command currently in use for Digtastic
+2. The /hand command previously in use for Digtastic
 
 command /hand:
 	trigger:
@@ -150,7 +150,7 @@ on chat:
 				
 				
 				
-7. Click detection for a server I'm working on (too long for it to be readable on here, just ask me for the code on discord)
+7. Click detection for a server I'm working on (sorry for the length)
 
 function money(p: player, s: int):
 	set line 5 of {_p}'s scoreboard to "&aMoney: %{_s}%"
@@ -293,78 +293,6 @@ command /unflag <player> [<string>]:
 		else:
 			clear {flags::%arg-1's uuid%::*}
 			send "Completely cleared all flags from %arg-1%"
-
-
-
-9. A karma system. (using another skript) every time you hit a pig, it lowers your karma
-
-on first join:
-	set {karma::%player's uuid%} to 0
-
-command /karma <player>:
-	trigger:
-		send "%arg-1% has %{karma::%arg-1's uuid%}% karma. &7Tip: &oDon't displease the Lord, or bad things might happen..."
-
-command /setkarma <player> <integer>:
-	permission: op
-	trigger:
-		set {karma::%arg-1's uuid%} to arg-2
-		send "&2Set %arg-1%'s karma to %arg-2%!"
-
-command /sacrifice:
-	aliases: /resetkarma
-	trigger:
-		if display name of player's held item is "&2&lSuper-Compressed Emerald":
-			remove 1 of tool from player's held item
-			if {karmaenabled::%player's uuid%} is false:
-				send "Nice! Your karma has been reset, and you have been released from Hell!"
-				set {karma::%player's uuid%} to 0
-				console command "/tp %player% -167.5 105 142.5"
-			else:
-				send "Nice! Your karma has been reset!"
-				set {karma::%player's uuid%} to 0
-		else:
-			send "You need to hold a Super-Compressed Emerald to reset your karma!"
-
-command /gotohell <player>:
-	aliases: /hell
-	permission: op
-	trigger:
-		send "&c&l%player% just sent you to hell!" to arg-1
-		console command "/tp %arg-1% -130.5 148 240.5"
-
-on any movement:
-
-	if {karmaenabled::%player's uuid%} is true:
-		#first karma stage
-		if {karma::%player's uuid%} is between -100 and -1:
-			set {_random} to a random integer between 1 and 10000
-			if {_random} is 1:
-				strike lightning effect at player
-				damage player by 2 hearts
-				send "&cGod dislikes anyone with low karma. Don't be a bad person!" to player
-		
-		#second karma stage
-		if {karma::%player's uuid%} is between -101 and -200:
-			set {_random} to a random integer between 1 and 1000
-			if {_random} is 1:
-				strike lightning effect at player
-				damage player by 3 hearts
-				send "&cGod is becoming angry about your ever-lowering karma. It isn't too late!" to player
-		
-		#third karma stage
-		if {karma::%player's uuid%} is between -201 and 300:
-			set {_random} to a random integer between 1 and 500
-			if {_random} is 1:
-				strike lightning effect at player
-				damage player by 4 hearts
-				send "&cThe only way to gain karma is to sacrifice &r&2&lSuper-Compressed Emerald &r&c to God using /sacrifice. If your karma lowers below -400, you will be sent to &4&lHell." to player
-		
-		#final karma stage
-		if {karma::%player's uuid%} is less than -400:
-			set {karmaenabled::%player's uuid%} to false
-			send "That's it. I'm fed up with you and your sins. &4&lGO TO HELL!" to player
-			console command "/tp %player% -130.5 148 240.5"
 
 
 
